@@ -17,16 +17,13 @@
 
 #include <PumpSettingsService.h>
 
-// #include <ESP_FlexyStepper.h>
+#include <FastAccelStepper.h>
 #include <HttpEndpoint.h>
 #include <MqttPubSub.h>
 #include <WebSocketServer.h>
 #include <NotificationEvents.h>
-// #include <WebSocketClient.h>
 
 #define DEFAULT_EJECT_STATE false
-#define OFF_STATE "OFF"
-#define ON_STATE "ON"
 
 #define PUMP_STATE_ENDPOINT_PATH "/rest/pumpState"
 #define PUMP_STATE_SOCKET_PATH "/ws/pumpState"
@@ -53,30 +50,30 @@ public:
         return StateUpdateResult::UNCHANGED;
     }
 
-    static void homeAssistRead(PumpState &settings, JsonObject &root)
+    static void mqttRead(PumpState &settings, JsonObject &root)
     {
-        root["state"] = settings.ejecting ? ON_STATE : OFF_STATE;
+        root["state"] = settings.ejecting;
     }
 
-    static StateUpdateResult homeAssistUpdate(JsonObject &root, PumpState &pumpState)
+    static StateUpdateResult mqttUpdate(JsonObject &root, PumpState &pumpState)
     {
-        String state = root["state"];
-        // parse new led state
-        boolean newState = false;
-        if (state.equals(ON_STATE))
-        {
-            newState = true;
-        }
-        else if (!state.equals(OFF_STATE))
-        {
-            return StateUpdateResult::ERROR;
-        }
-        // change the new state, if required
-        if (pumpState.ejecting != newState)
-        {
-            pumpState.ejecting = newState;
-            return StateUpdateResult::CHANGED;
-        }
+        // String state = root["state"];
+        // // parse new led state
+        // boolean newState = false;
+        // if (state.equals(ON_STATE))
+        // {
+        //     newState = true;
+        // }
+        // else if (!state.equals(OFF_STATE))
+        // {
+        //     return StateUpdateResult::ERROR;
+        // }
+        // // change the new state, if required
+        // if (pumpState.ejecting != newState)
+        // {
+        //     pumpState.ejecting = newState;
+        //     return StateUpdateResult::CHANGED;
+        // }
         return StateUpdateResult::UNCHANGED;
     }
 };
@@ -90,21 +87,20 @@ public:
                       PumpSettingsService *pumpSettingsService,
                       NotificationEvents *notificationEvents);
     void begin();
-    void processMovement();
-    // void loop();
+    void checkPumpStopped();
 
 private:
     HttpEndpoint<PumpState> _httpEndpoint;
     MqttPubSub<PumpState> _mqttPubSub;
     WebSocketServer<PumpState> _webSocketServer;
-    //  WebSocketClient<PumpState> _webSocketClient;
     AsyncMqttClient *_mqttClient;
     PumpSettingsService *_pumpSettingsService;
     NotificationEvents *_notificationEvents;
-    // ESP_FlexyStepper stepper;
+    FastAccelStepperEngine engine;
+    FastAccelStepper *stepper;
 
-    void registerConfig();
     void onConfigUpdated();
+    void updatePumpState(bool ejecting);
 };
 
 #endif
