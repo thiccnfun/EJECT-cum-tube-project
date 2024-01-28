@@ -171,7 +171,12 @@
 			</label>
 
 			<div class="flex-grow" />
-			<button class="btn btn-primary inline-flex items-center w-48" on:click={toggleEject}>
+			<button 
+				class="btn inline-flex items-center w-48 
+					{pumpState.ejecting ? 'hover:bg-red-700 bg-red-800' : 'hover:bg-emerald-600 bg-emerald-700'
+				}				"
+				on:click={toggleEject}
+			>
 				{#if pumpState.ejecting}
 					<!-- loading icon -->
 					<Reload class="animate-spin mr-2 h-5 w-5" />
