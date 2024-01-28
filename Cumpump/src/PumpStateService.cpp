@@ -82,6 +82,16 @@ void PumpStateService::begin()
   } else {
     Serial.println("unable to connect to stepper");
   }
+
+  xTaskCreatePinnedToCore(
+    this->_loopImpl,            // Function that should be called
+    "Pump State Service",       // Name of the task (for debugging)
+    4096,                       // Stack size (bytes)
+    this,                       // Pass reference to this class instance
+    (tskIDLE_PRIORITY),         // task priority
+    NULL,                       // Task handle
+    ESP32SVELTEKIT_RUNNING_CORE // Pin to application core
+  );
 }
 
 void PumpStateService::updatePumpState(bool ejecting)
@@ -111,11 +121,4 @@ void PumpStateService::onConfigUpdated()
   } else if (stepper->isRunning()) {
     stepper->stopMove();
   }
-}
-
-void PumpStateService::checkPumpStopped()
-{
-    if (_state.ejecting && !stepper->isRunning()) {
-      updatePumpState(false);
-    }
 }

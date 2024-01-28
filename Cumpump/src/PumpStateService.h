@@ -1,3 +1,5 @@
+#pragma once
+
 #ifndef PumpStateService_h
 #define PumpStateService_h
 
@@ -87,7 +89,19 @@ public:
                       PumpSettingsService *pumpSettingsService,
                       NotificationEvents *notificationEvents);
     void begin();
-    void checkPumpStopped();
+
+protected:
+    static void _loopImpl(void *_this) { static_cast<PumpStateService *>(_this)->_loop(); }
+    void _loop()
+    {
+        while (1)
+        {
+            if (_state.ejecting && !stepper->isRunning()) {
+                updatePumpState(false);
+            }
+            vTaskDelay(100);
+        }
+    };
 
 private:
     HttpEndpoint<PumpState> _httpEndpoint;

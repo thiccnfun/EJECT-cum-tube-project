@@ -30,7 +30,5 @@ void setup()
 
 void loop()
 {
-  pumpStateService.checkPumpStopped();
-
-  delay(250);
+  vTaskDelete(NULL);
 }
