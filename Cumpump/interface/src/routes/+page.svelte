@@ -30,8 +30,8 @@
 			</p>
 			<a
 				class="btn btn-primary"
-				href="/demo"
-				on:click={() => notifications.success('You did it!', 1000)}>Start Demo</a
+				href="/controls"
+				on:click={() => notifications.success('You did it!', 1000)}>Start Pumping</a
 			>
 		</div>
 	</div>

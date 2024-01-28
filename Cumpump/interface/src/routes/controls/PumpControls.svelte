@@ -83,35 +83,11 @@
 	});
 
 	onMount(() => {
-		// pumpStateSocket.send('Hello');
-		// pumpSettingsSocket.send('Hello');
-		// pumpStateSocket.open();
-		// getPumpState();
+		// 
 	});
 
 	async function toggleEject() {
 		pumpStateSocket.send(JSON.stringify({ ejecting: !pumpState.ejecting }));
-
-
-		// try {
-		// 	const response = await fetch('/rest/pumpState', {
-		// 		method: 'POST',
-		// 		headers: {
-		// 			Authorization: $page.data.features.security ? 'Bearer ' + $user.bearer_token : 'Basic',
-		// 			'Content-Type': 'application/json'
-		// 		},
-		// 		body: JSON.stringify({ ejecting: !ejecting })
-		// 	});6
-		// 	if (response.status == 200) {
-		// 		notifications.success('Ejecting...', 3000);
-		// 		const res = await response.json();
-		// 		ejecting = res.ejecting;
-		// 	} else {
-		// 		notifications.error('User not authorized.', 3000);
-		// 	}
-		// } catch (error) {
-		// 	console.error('Error:', error);
-		// }
 	}
 
 	async function updateSettings (key: string, value: any) {
@@ -124,12 +100,12 @@
 
 <SettingsCard collapsible={false}>
 	<IconDroplet slot="icon" class="lex-shrink-0 mr-2 h-6 w-6 self-end" />
-	<span slot="title">Pump State</span>
+	<span slot="title">Pump Settings</span>
 	<div class="w-full">
 		<div class="flex flex-col flex-wrap justify-between gap-x-2">
-			<span class="mr-4">Time (seconds)</span>
-			<label class="label cursor-pointer">
-				<span class="mr-4">{pumpSettings.cum_time}</span>
+			<b>Time (seconds)</b>
+			<label class="label cursor-pointer space-x-4">
+				<span class="w-14 text-center">{pumpSettings.cum_time}</span>
 				<input type="range" min="0" max="300" 
 					bind:value={pumpSettings.cum_time} 
 					class="range"
@@ -138,9 +114,9 @@
 					}}
 				/>
 			</label>
-			<span class="mr-4">Size</span>
-			<label class="label cursor-pointer">
-				<span class="mr-4">{cumSizeValue}</span>
+			<b>Size</b>
+			<label class="label cursor-pointer space-x-4">
+				<span class="w-14 text-center">{cumSizeValue}</span>
 				<input type="range" 
 					min="1" 
 					max="500" 
@@ -152,9 +128,9 @@
 					}}
 				/>
 			</label>
-			<span class="mr-4">Force</span>
-			<label class="label cursor-pointer">
-				<span class="mr-4">{cumAccelValue}</span>
+			<b>Force</b>
+			<label class="label cursor-pointer space-x-4">
+				<span class="w-14 text-center">{cumAccelValue}</span>
 				<input type="range" 
 					min="1" 
 					max="500" 
@@ -167,7 +143,7 @@
 				/>
 			</label>
 			<label class="label cursor-pointer">
-				<span class="">Reverse Flow</span>
+				<b class="ml-auto mr-4">Reverse Flow</b>
 				<input
 					type="checkbox"
 					class="toggle toggle-primary"
@@ -179,23 +155,11 @@
 			</label>
 		</div>
 
+		<hr class="my-4 border-gray-600" />
 
-		<!-- <h1 class="text-xl font-semibold">REST Example</h1>
-		<div class="alert alert-info my-2 shadow-lg">
-			<Info class="h-6 w-6 flex-shrink-0 stroke-current" />
-			<span>The form below controls the LED via the RESTful service exposed by the ESP device.</span
-			>
-		</div> -->
-		<div class="flex flex-row flex-wrap justify-between gap-x-2">
-			<!-- <div class="form-control w-52">
-				<label class="label cursor-pointer">
-					<span class="mr-4">Pump State?</span>
-					<input type="checkbox" bind:checked={ejecting} class="checkbox checkbox-primary" />
-				</label>
-			</div> -->
-
+		<div class="flex flex-row flex-wrap justify-between gap-x-2 mt-2">
 			<label class="label cursor-pointer">
-				<span class="">Continuous</span>
+				<b class="mr-4">Continuous</b>
 				<input
 					type="checkbox"
 					class="toggle toggle-primary"
@@ -207,7 +171,7 @@
 			</label>
 
 			<div class="flex-grow" />
-			<button class="btn btn-primary inline-flex items-center" on:click={toggleEject}>
+			<button class="btn btn-primary inline-flex items-center w-48" on:click={toggleEject}>
 				{#if pumpState.ejecting}
 					<!-- loading icon -->
 					<Reload class="animate-spin mr-2 h-5 w-5" />
@@ -219,27 +183,5 @@
 				{/if}
 			</button>
 		</div>
-		<!-- <div class="divider" />
-		<h1 class="text-xl font-semibold">Websocket Example</h1>
-		<div class="alert alert-info my-2 shadow-lg">
-			<Info class="h-6 w-6 flex-shrink-0 stroke-current" />
-			<span
-				>The switch below controls the LED via the WebSocket. It will automatically update whenever
-				the LED state changes.</span
-			>
-		</div>
-		<div class="form-control w-52">
-			<label class="label cursor-pointer">
-				<span class="">Light State?</span>
-				<input
-					type="checkbox"
-					class="toggle toggle-primary"
-					bind:checked={pumpState.ejecting}
-					on:change={() => {
-						pumpStateSocket.send(JSON.stringify(pumpState));
-					}}
-				/>
-			</label>
-		</div> -->
 	</div>
 </SettingsCard>

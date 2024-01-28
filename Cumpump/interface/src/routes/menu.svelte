@@ -49,9 +49,9 @@
 
 	let menuItems = [
 		{
-			title: 'Demo App',
+			title: 'Pump Controls',
 			icon: Control,
-			href: '/demo',
+			href: '/controls',
 			feature: true,
 			active: false
 		},
