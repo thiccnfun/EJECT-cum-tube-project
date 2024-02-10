@@ -19,7 +19,9 @@ PumpStateService pumpStateService = PumpStateService(&server,
 
 void setup()
 {  
+#ifdef SERIAL_INFO
   Serial.begin(115200);
+#endif
 
   esp32sveltekit.setMDNSAppName(APP_NAME);
 

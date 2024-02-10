@@ -80,7 +80,9 @@ void PumpStateService::begin()
     stepper->setEnablePin(MOTOR_ENA_PIN);
     stepper->setAutoEnable(true);
   } else {
+#ifdef SERIAL_INFO
     Serial.println("unable to connect to stepper");
+#endif
   }
 
   xTaskCreatePinnedToCore(
