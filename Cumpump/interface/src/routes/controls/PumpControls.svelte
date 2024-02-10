@@ -18,8 +18,27 @@
 		cum_time: number;
 		cum_size: number;
 		cum_accel: number;
-		reverse: boolean;
-		continuous: boolean;
+		reverse?: boolean;
+		continuous?: boolean;
+	};
+
+	type Presets = {
+		[key: string]: PumpSettings;
+	};
+
+	const presets: Presets = {
+		'Big Squirt': {
+			cum_time: 1,
+			cum_size: 75 * DIVISOR,
+			cum_accel: 200 * DIVISOR,
+			continuous: false,
+		},
+		'Small Squirt': {
+			cum_time: 0,
+			cum_size: 30 * DIVISOR,
+			cum_accel: 200 * DIVISOR,
+			continuous: false,
+		},
 	};
 
 	let pumpState: PumpState = { ejecting: false };
@@ -28,6 +47,7 @@
 	};
 	let cumSizeValue = pumpSettings.cum_size / DIVISOR;
 	let cumAccelValue = pumpSettings.cum_accel / DIVISOR;
+	let selectedPreset = '';
 
 	const ws_token = $page.data.features.security ? '?access_token=' + $user.bearer_token : '';
 
@@ -90,17 +110,50 @@
 		pumpStateSocket.send(JSON.stringify({ ejecting: !pumpState.ejecting }));
 	}
 
-	async function updateSettings (key: string, value: any) {
+	async function updateSettings (settings: any) {
 		pumpSettingsSocket.send(JSON.stringify({ 
 			...pumpSettings,
-			[key]: value 
+			...settings
 		}));
 	}
+
+	async function updateSetting (key: string, value: number | boolean) {
+		updateSettings({ [key]: value });
+	}
+
 </script>
 
 <SettingsCard collapsible={false}>
-	<IconDroplet slot="icon" class="lex-shrink-0 mr-2 h-6 w-6 self-end" />
+	<IconDroplet slot="icon" class="flex-shrink-0 mr-2 h-6 w-6 self-end" />
 	<span slot="title">Pump Settings</span>
+	<div class="flex flex-row flex-grow">
+		<select 
+			class="select select-bordered"
+			bind:value={selectedPreset}
+			on:change={(e) => {
+				const preset = presets[e.target.value];
+				if (!preset) return;
+				const newSettings = { ...pumpSettings, ...preset};
+				updateSettings(newSettings);
+			}}
+		>
+			<option value="" disabled selected>Presets</option>
+			{#each Object.keys(presets) as preset}
+				<option value={preset}>{preset}</option>
+			{/each}
+		</select>
+		<label class="label cursor-pointer ml-auto">
+			<b class="mr-4">Reverse Flow</b>
+			<input
+				type="checkbox"
+				class="toggle toggle-primary"
+				bind:checked={pumpSettings.reverse}
+				on:change={(e) => {
+					updateSetting('reverse', e.target.checked);
+				}}
+			/>
+		</label>
+	</div>
 	<div class="w-full">
 		<div class="flex flex-col flex-wrap justify-between gap-x-2">
 			<b>Time (seconds)</b>
@@ -110,7 +163,8 @@
 					bind:value={pumpSettings.cum_time} 
 					class="range"
 					on:change={(e) => {
-						updateSettings('cum_time', Number(e.target.value));
+						selectedPreset = '';
+						updateSetting('cum_time', Number(e.target.value));
 					}}
 				/>
 			</label>
@@ -124,7 +178,8 @@
 					bind:value={cumSizeValue} 
 					class="range"
 					on:change={(e) => {
-						updateSettings('cum_size', Number(e.target.value) * DIVISOR);
+						selectedPreset = '';
+						updateSetting('cum_size', Number(e.target.value) * DIVISOR);
 					}}
 				/>
 			</label>
@@ -138,18 +193,8 @@
 					bind:value={cumAccelValue} 
 					class="range"
 					on:change={(e) => {
-						updateSettings('cum_accel', Number(e.target.value) * DIVISOR);
-					}}
-				/>
-			</label>
-			<label class="label cursor-pointer">
-				<b class="ml-auto mr-4">Reverse Flow</b>
-				<input
-					type="checkbox"
-					class="toggle toggle-primary"
-					bind:checked={pumpSettings.reverse}
-					on:change={(e) => {
-						updateSettings('reverse', e.target.checked);
+						selectedPreset = '';
+						updateSetting('cum_accel', Number(e.target.value) * DIVISOR);
 					}}
 				/>
 			</label>
@@ -165,7 +210,8 @@
 					class="toggle toggle-primary"
 					bind:checked={pumpSettings.continuous}
 					on:change={(e) => {
-						updateSettings('continuous', e.target.checked);
+						selectedPreset = '';
+						updateSetting('continuous', e.target.checked);
 					}}
 				/>
 			</label>
