@@ -154,7 +154,7 @@
 			/>
 		</label>
 	</div>
-	<div class="w-full">
+	<div class="w-full mt-2">
 		<div class="flex flex-col flex-wrap justify-between gap-x-2">
 			<b>Time (seconds)</b>
 			<label class="label cursor-pointer space-x-4">
