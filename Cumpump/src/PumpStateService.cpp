@@ -36,7 +36,7 @@ StaticJsonDocument<128> responseDoc;
 PumpStateService::PumpStateService(
   PsychicHttpServer *server,
   SecurityManager *securityManager,
-  AsyncMqttClient *mqttClient,
+  PsychicMqttClient *mqttClient,
   PumpSettingsService *pumpSettingsService,
   NotificationEvents *notificationEvents) : 
     _httpEndpoint(PumpState::read,

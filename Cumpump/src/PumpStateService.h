@@ -85,7 +85,7 @@ class PumpStateService : public StatefulService<PumpState>
 public:
     PumpStateService(PsychicHttpServer *server,
                       SecurityManager *securityManager,
-                      AsyncMqttClient *mqttClient,
+                      PsychicMqttClient *mqttClient,
                       PumpSettingsService *pumpSettingsService,
                       NotificationEvents *notificationEvents);
     void begin();
@@ -107,7 +107,7 @@ private:
     HttpEndpoint<PumpState> _httpEndpoint;
     MqttPubSub<PumpState> _mqttPubSub;
     WebSocketServer<PumpState> _webSocketServer;
-    AsyncMqttClient *_mqttClient;
+    PsychicMqttClient *_mqttClient;
     PumpSettingsService *_pumpSettingsService;
     NotificationEvents *_notificationEvents;
     FastAccelStepperEngine engine;
