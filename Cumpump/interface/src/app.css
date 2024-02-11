@@ -1,3 +1,8 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+.area-disabled {
+  pointer-events: none;
+  opacity: 0.5;
+}

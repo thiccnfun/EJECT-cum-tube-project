@@ -5,8 +5,9 @@
 	import { notifications } from '$lib/components/toasts/notifications';
 	import SettingsCard from '$lib/components/SettingsCard.svelte';
 	import IconDropletFilled from '~icons/tabler/droplet-filled';
-	import IconDroplet from '~icons/tabler/droplet';
-	import Reload from '~icons/tabler/reload';
+	import AccessPoint from '~icons/tabler/access-point';
+	import AccessPointOff from '~icons/tabler/access-point-off';
+	import Propeller from '~icons/tabler/propeller';
 
 	const DIVISOR = 800;
 
@@ -48,6 +49,7 @@
 	let cumSizeValue = pumpSettings.cum_size / DIVISOR;
 	let cumAccelValue = pumpSettings.cum_accel / DIVISOR;
 	let selectedPreset = '';
+	let pumpConnected = false;
 
 	const ws_token = $page.data.features.security ? '?access_token=' + $user.bearer_token : '';
 
@@ -78,6 +80,7 @@
 
 	pumpSettingsSocket.onopen = (event) => {
 		pumpSettingsSocket.send('Hello');
+		pumpConnected = true;
 	};
 
 	pumpSettingsSocket.addEventListener('close', (event) => {
@@ -86,6 +89,7 @@
 		console.log('Pump State WebSocket closed with code:', closeCode);
 		console.log('Close reason:', closeReason);
 		notifications.error('Websocket disconnected', 5000);
+		pumpConnected = false;
 	});
 
 	pumpSettingsSocket.onmessage = (event) => {
@@ -124,9 +128,15 @@
 </script>
 
 <SettingsCard collapsible={false}>
-	<IconDroplet slot="icon" class="flex-shrink-0 mr-2 h-6 w-6 self-end" />
-	<span slot="title">Pump Settings</span>
-	<div class="flex flex-row flex-grow">
+	<span slot="icon" class="flex-shrink-0 mr-2 h-6 w-6 self-end">
+		{#if pumpConnected}
+			<AccessPoint />
+		{:else}
+			<AccessPointOff />
+		{/if}
+	</span>
+	<span slot="title">Pump {pumpConnected ? 'Connected' : 'Disconnected'}</span>
+	<div class="flex flex-row flex-grow {pumpConnected ? '' : 'area-disabled'}">
 		<select 
 			class="select select-bordered"
 			bind:value={selectedPreset}
@@ -225,7 +235,7 @@
 			>
 				{#if pumpState.ejecting}
 					<!-- loading icon -->
-					<Reload class="animate-spin mr-2 h-5 w-5" />
+					<Propeller class="animate-spin mr-2 h-5 w-5" />
 					<span>Stop Ejecting</span>
 				{:else}
 					<!-- Icon and text when pumpState.ejecting is false -->
