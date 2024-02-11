@@ -115,7 +115,13 @@ void PumpStateService::onConfigUpdated()
       stepper->setAcceleration(settings.cumAccel);  // steps/s²
 
       if (settings.cumSize > 0) {
-        stepper->move(settings.reverse ? -settings.cumSize : settings.cumSize);
+        if (settings.continuous && settings.reverse) {
+          stepper->runBackward();
+        } else if (settings.continuous) {
+          stepper->runForward();
+        } else {
+          stepper->move(settings.reverse ? -settings.cumSize : settings.cumSize);
+        }
       } else {
         updatePumpState(false);
       }
