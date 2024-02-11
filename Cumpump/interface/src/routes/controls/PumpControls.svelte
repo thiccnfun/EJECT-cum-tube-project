@@ -62,10 +62,12 @@
 
 	pumpStateSocket.addEventListener('close', (event) => {
 		const closeCode = event.code;
-		const closeReason = event.reason;
-		console.log('Pump State WebSocket closed with code:', closeCode);
-		console.log('Close reason:', closeReason);
-		notifications.error('Websocket disconnected', 5000);
+		if (closeCode !== 1000 && closeCode !== 1005) {
+			const closeReason = event.reason;
+			console.log('Pump State WebSocket closed with code:', closeCode);
+			console.log('Close reason:', closeReason);
+			notifications.error('Websocket disconnected', 5000);
+		}
 	});
 
 	pumpStateSocket.onmessage = (event) => {
@@ -85,12 +87,16 @@
 
 	pumpSettingsSocket.addEventListener('close', (event) => {
 		const closeCode = event.code;
-		const closeReason = event.reason;
-		console.log('Pump State WebSocket closed with code:', closeCode);
-		console.log('Close reason:', closeReason);
-		notifications.error('Websocket disconnected', 5000);
+		if (closeCode !== 1000 && closeCode !== 1005) {
+			const closeReason = event.reason;
+			console.log('Pump State WebSocket closed with code:', closeCode);
+			console.log('Close reason:', closeReason);
+			notifications.error('Websocket disconnected', 5000);
+		}
 		pumpConnected = false;
 	});
+	pumpSettingsSocket.addEventListener('error', () => pumpConnected = false, false);
+
 
 	pumpSettingsSocket.onmessage = (event) => {
 		const message = JSON.parse(event.data);
@@ -102,8 +108,8 @@
 	};
 
 	onDestroy(() => {
-		pumpStateSocket.close()
-		pumpSettingsSocket.close()
+		pumpStateSocket.close(1000);
+		pumpSettingsSocket.close(1000);
 	});
 
 	onMount(() => {
@@ -230,7 +236,7 @@
 			<button 
 				class="btn inline-flex items-center w-48 
 					{pumpState.ejecting ? 'hover:bg-red-700 bg-red-800' : 'hover:bg-emerald-600 bg-emerald-700'
-				}				"
+				}"
 				on:click={toggleEject}
 			>
 				{#if pumpState.ejecting}
